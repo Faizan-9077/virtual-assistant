@@ -1,11 +1,39 @@
-import React from "react";
+import React, { useContext } from "react";
 import bg from "../assets/background.jpg";
 import { HiMiniEye, HiEyeSlash } from "react-icons/hi2";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { userDataContext } from "../context/UserContext";
+import axios from "axios"
 
 function SignUp() {
+  const [showPassword, setshowPassword] = useState(false)
+  const navigate = useNavigate();
+
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [err, setError] = useState("");
+
+  const {serverUrl} = useContext(userDataContext)
+
+  const handleSignUp = async(e) => {
+    e.preventDefault()
+    setError("")
+try{
+  let result = await axios.post(`${serverUrl}/api/auth/signup`, {
+    name, email,password
+  }, {withCredentials:true})
+  console.log(result)
+}catch (error) {
+  console.log(error.response?.data);
+  setError(error.response.data.message)
+}
+  }
+
   return (
-    <div
-      className="w-full h-screen bg-cover bg-center flex justify-center items-center"
+    <form
+      className="w-full h-screen bg-cover bg-center flex justify-center items-center" onSubmit={handleSignUp}
       style={{ backgroundImage: `url(${bg})` }}
     >
       <div
@@ -30,6 +58,7 @@ function SignUp() {
             hover:border-white/25
             focus:border-blue-400/70 focus:ring-2 focus:ring-blue-400/30
             transition-all duration-200"
+          required onChange={(e) => setName(e.target.value)} value = {name}
         />
 
         {/* Email */}
@@ -43,21 +72,37 @@ function SignUp() {
             hover:border-white/25
             focus:border-blue-400/70 focus:ring-2 focus:ring-blue-400/30
             transition-all duration-200"
+          required onChange={(e) => setEmail(e.target.value)} value = {email}
+          
         />
 
-        {/* Password */}
-        <input
-          type="password"
-          placeholder="Password"
-          className="p-3 rounded-lg 
-            bg-white/15 border border-white/10
-            text-white placeholder-gray-400 
-            outline-none 
-            hover:border-white/25
-            focus:border-blue-400/70 focus:ring-2 focus:ring-blue-400/30
-            transition-all duration-200"
-        />
-        <HiMiniEye className="absolute top-12 right-12 text-white h-102 w-5 cursor-pointer" />
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            className="w-full p-3 rounded-lg 
+              bg-white/15 border border-white/10
+              text-white placeholder-gray-400 
+              outline-none 
+              hover:border-white/25
+              focus:border-blue-400/70 focus:ring-2 focus:ring-blue-400/30
+              transition-all duration-200"
+            required onChange={(e) => setPassword(e.target.value)} value = {password}
+            
+          />
+
+          {showPassword ? (
+            <HiEyeSlash
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white w-5 h-5 cursor-pointer"
+              onClick={() => setshowPassword(false)}
+            />
+          ) : (
+            <HiMiniEye
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white w-5 h-5 cursor-pointer"
+              onClick={() => setshowPassword(true)}
+            />
+          )}
+        </div>
 
         {/* Confirm Password */}
         <input
@@ -72,8 +117,12 @@ function SignUp() {
             transition-all duration-200"
         />
 
+        {err.length > 0 && <p className="text-red-500">
+          *{err}
+          </p>}
         {/* Button */}
         <button
+        type="submit"
           className="bg-blue-500 hover:bg-blue-600 
             text-white p-3 rounded-lg font-semibold 
             hover:shadow-lg hover:shadow-blue-500/30
@@ -85,12 +134,15 @@ function SignUp() {
 
         <p className="text-gray-400 text-center text-sm -mt-1">
           Already have an account?{" "}
-          <span className="text-blue-400 cursor-pointer hover:underline">
-            Login
+          <span 
+          className="text-blue-400 cursor-pointer hover:underline "
+          onClick={() => navigate("/signin")}
+          >
+            Sign in
           </span>
         </p>
       </div>
-    </div>
+    </form>
   );
 }
 
