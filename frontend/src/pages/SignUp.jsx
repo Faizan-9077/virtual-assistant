@@ -13,6 +13,7 @@ function SignUp() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [loading, setLoading] = useState(false)
   const [err, setError] = useState("");
 
   const {serverUrl} = useContext(userDataContext)
@@ -20,13 +21,17 @@ function SignUp() {
   const handleSignUp = async(e) => {
     e.preventDefault()
     setError("")
+    setLoading(true)
 try{
   let result = await axios.post(`${serverUrl}/api/auth/signup`, {
     name, email,password
   }, {withCredentials:true})
+
   console.log(result)
+  setLoading(false)
 }catch (error) {
   console.log(error.response?.data);
+  setLoading(false)
   setError(error.response.data.message)
 }
   }
@@ -104,19 +109,7 @@ try{
           )}
         </div>
 
-        {/* Confirm Password */}
-        <input
-          type="password"
-          placeholder="Confirm Password"
-          className="p-3 rounded-lg 
-            bg-white/15 border border-white/10
-            text-white placeholder-gray-400 
-            outline-none 
-            hover:border-white/25
-            focus:border-blue-400/70 focus:ring-2 focus:ring-blue-400/30
-            transition-all duration-200"
-        />
-
+      
         {err.length > 0 && <p className="text-red-500">
           *{err}
           </p>}
@@ -128,8 +121,10 @@ try{
             hover:shadow-lg hover:shadow-blue-500/30
             active:scale-[0.98]
             transition-all duration-200 mt-1, mb-2"
-        >
-          Create Account
+            disabled={loading}
+      >
+        {loading ? "Loading..." : "Create Account"}
+        
         </button>
 
         <p className="text-gray-400 text-center text-sm -mt-1">
