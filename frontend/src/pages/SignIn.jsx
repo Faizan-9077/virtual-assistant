@@ -15,7 +15,7 @@ function SignIn() {
   const [err, setError] = useState("");
   const [loading, setLoading] = useState(false)
 
-  const {serverUrl} = useContext(userDataContext)
+  const {serverUrl, refreshCurrentUser} = useContext(userDataContext)
 
   const handleSignIn = async(e) => {
     e.preventDefault()
@@ -26,6 +26,7 @@ try{
     email,password
   }, {withCredentials:true})
   console.log(result)
+  await refreshCurrentUser()
   setLoading(false)
 }catch (error) {
   console.log(error.response?.data);

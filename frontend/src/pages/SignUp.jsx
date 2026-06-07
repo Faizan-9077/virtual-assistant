@@ -16,7 +16,7 @@ function SignUp() {
   const [loading, setLoading] = useState(false)
   const [err, setError] = useState("");
 
-  const {serverUrl} = useContext(userDataContext)
+  const {serverUrl, refreshCurrentUser} = useContext(userDataContext)
 
   const handleSignUp = async(e) => {
     e.preventDefault()
@@ -28,6 +28,7 @@ try{
   }, {withCredentials:true})
 
   console.log(result)
+  await refreshCurrentUser()
   setLoading(false)
 }catch (error) {
   console.log(error.response?.data);

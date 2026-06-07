@@ -30,7 +30,9 @@ export const signUp = async (req, res) => {
             secure : false
         })
 
-        return res.status(201).json(user)
+        const safeUser = await User.findById(user._id).select("-password")
+
+        return res.status(201).json(safeUser)
 
     } catch (error){
         return res.status(500).json({message: `sign up error ${error}`})
@@ -61,7 +63,9 @@ export const Login = async (req, res) => {
             secure : false
         })
 
-        return res.status(200).json(user)
+        const safeUser = await User.findById(user._id).select("-password")
+
+        return res.status(200).json(safeUser)
 
     } catch (error){
         return res.status(500).json({message: `login error ${error}`})
@@ -73,7 +77,7 @@ export const logOut = async (req, res) => {
         res.clearCookie("token")
         return res.status(200).json({message : "log out successfully"}) 
     }
-    catch(erro) {
+    catch(error) {
         return res.status(500).json({message:`log out error ${error}`})
     }
 }
